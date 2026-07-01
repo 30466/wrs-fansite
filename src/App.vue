@@ -26,11 +26,6 @@
                     </a>
                   </el-dropdown-item>
                   <el-dropdown-item>
-                    <a href="https://sd.abm48.com/" target="_blank" class="dropdown-item-link">
-                    🎤 弹幕唱歌检测
-                    </a>
-                  </el-dropdown-item>
-                  <el-dropdown-item>
                     <a href="https://tools.abm48.com/clip" target="_blank" class="dropdown-item-link">
                     ✂️ 批量剪切（可导入切片本剪切）
                     </a>
@@ -80,6 +75,7 @@
       <div class="main-container">
         <router-view />
       </div>
+
     </div>
   </el-config-provider>
 </template>

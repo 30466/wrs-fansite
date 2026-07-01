@@ -5,7 +5,7 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST");
 header("Access-Control-Allow-Headers: Content-Type");
 
-$memberIdOrName = isset($_GET['member_id']) ? $_GET['member_id'] : '谭思慧';
+$memberIdOrName = isset($_GET['member_id']) ? $_GET['member_id'] : '吴睿莎';
 $type = isset($_GET['type']) ? $_GET['type'] : 'member';
 
 $allowedTypes = ['member', 'election-ranks'];
