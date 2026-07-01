@@ -1,15 +1,12 @@
 <template>
-  <!-- 1. 包裹 ElConfigProvider 并绑定中文包 -->
   <el-config-provider :locale="zhCn">
-    <div class="app-wrapper" :style="{ backgroundImage: `url(${bgImage})` }">
+    <div class="app-wrapper" :class="{ 'is-player-mode': isPlayerMode }" :style="{ backgroundImage: `url(${bgImage})` }">
       <nav class="nav-bar">
-        <!-- ... 导航栏代码保持不变 ... -->
         <div class="nav-content">
-          <span class="logo">BEJ48 吴睿莎</span>
+          <span class="logo">吴睿莎</span>
           <div class="links">
-            <!-- 唱歌 - 下拉菜单 -->
-            <el-dropdown class="tool-dropdown" :show-timeout="100">
-              <span class="el-dropdown-link">
+            <el-dropdown class="tool-dropdown" trigger="hover" :show-timeout="100">
+              <span class="el-dropdown-link" @click="$router.push('/')">
                 唱歌
                 <el-icon class="el-icon--right"><ArrowDown /></el-icon>
               </span>
@@ -34,18 +31,17 @@
               </template>
             </el-dropdown>
 
-            <!-- 口袋48 - 下拉菜单 -->
-            <el-dropdown class="tool-dropdown" :show-timeout="100">
-              <span class="el-dropdown-link">
+            <el-dropdown class="tool-dropdown" trigger="hover" :show-timeout="100">
+              <span class="el-dropdown-link" @click="$router.push('/replay')">
                 口袋48
                 <el-icon class="el-icon--right"><ArrowDown /></el-icon>
               </span>
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item>
-                    <a href="https://msg48.org/live/83099892" target="_blank" class="dropdown-item-link">
+                    <router-link to="/replay" class="dropdown-item-link">
                     📺 口袋48录播回放
-                    </a>
+                    </router-link>
                   </el-dropdown-item>
                   <el-dropdown-item>
                     <a href="https://msg48.org" target="_blank" class="dropdown-item-link">
@@ -60,36 +56,38 @@
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
-            <!-- 简介 -->
             <router-link to="/profile">简介</router-link>
 
-            <!-- 工具 - 直接跳转 -->
             <a href="https://tools.abm48.com/" target="_blank">工具</a>
 
-            <!-- 关于 -->
             <router-link to="/about">关于</router-link>
           </div>
         </div>
       </nav>
 
-      <div class="main-container">
+      <div class="main-container" :class="{ 'is-replay': $route.path === '/replay' }">
         <router-view />
       </div>
 
+      <AudioPlayer />
     </div>
   </el-config-provider>
 </template>
 
 <script setup>
 import bgImage from './assets/bg.jpg'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { ArrowDown } from '@element-plus/icons-vue'
-// 2. 引入 Element Plus 中文语言包
+import AudioPlayer from './components/AudioPlayer.vue'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import { ElConfigProvider } from 'element-plus'
+
+const route = useRoute()
+const isPlayerMode = computed(() => route.path === '/replay' && !!route.query.live)
 </script>
 
 <style>
-/* 全局字体设置，模仿一般个人主页的清爽字体 */
 body { 
   margin: 0; 
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
@@ -105,10 +103,10 @@ body {
 }
 
 .nav-bar {
-  background: rgba(255, 255, 255, 0.95); /* 背景稍微白一点，更像门户站 */
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   padding: 1rem 0;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05); /* 阴影变淡 */
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -124,37 +122,33 @@ body {
   flex-wrap: wrap; 
 }
 
-/* Logo 改成红色 */
 .logo { 
   font-weight: bold; 
   font-size: 1.3rem; 
-  color: #6600ffc6; 
+  color: #7c3aed; 
   margin-right: 20px;
 }
 
 .links {
   display: flex;
-  gap: 30px; /* 间距拉大 */
+  gap: 30px;
   align-items: center;
 }
 
-/* --- 核心修改：模仿你个人网站的导航链接样式 --- */
 .links a {
   text-decoration: none;
-  color: #303133; /* 深灰色，显专业 */
-  font-weight: 600; /* 加粗 */
+  color: #303133;
+  font-weight: 600;
   font-size: 16px;
   position: relative;
   padding-bottom: 5px;
   transition: color 0.3s;
 }
 
-/* 鼠标悬停变蓝 */
 .links a:hover, .links a.router-link-active { 
-  color: #409EFF; /* 经典的 Element Plus 蓝 */
+  color: #409EFF;
 }
 
-/* 简单的底部蓝色条效果（可选） */
 .links a::after {
   content: '';
   position: absolute;
@@ -176,8 +170,12 @@ body {
   padding: 0 20px;
   min-height: 80vh;
 }
+.main-container.is-replay {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
 
-/* 下拉触发文字的样式 (模仿其他链接) */
 .el-dropdown-link {
   cursor: pointer;
   color: #303133;
@@ -185,15 +183,21 @@ body {
   font-size: 16px;
   display: flex;
   align-items: center;
-  outline: none; /* 去掉点击时的蓝框 */
+  outline: none;
 }
 
-/* 鼠标悬停变蓝 */
+</style>
+
+<style>
+@media (max-width: 768px) {
+  .is-player-mode .nav-bar { display: none; }
+  .is-player-mode .main-container { margin-top: 10px; }
+}
+
 .el-dropdown-link:hover {
   color: #409EFF;
 }
 
-/* 下拉菜单里的链接样式 */
 .dropdown-item-link {
   text-decoration: none;
   color: #606266;

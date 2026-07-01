@@ -10,9 +10,9 @@
         <!-- 1. 头部信息卡片 -->
         <el-card class="glass-card header-card">
           <div class="header-content">
-            <img 
-              :src="getFullUrl(member.avatar_url)" 
-              class="avatar-large" 
+            <img
+              :src="getFullUrl(member.avatar_url)"
+              class="avatar-large"
               @click="previewImage(getFullUrl(member.avatar_url))"
             />
             <div class="info-col">
@@ -106,16 +106,16 @@
           <template #header>
             <span class="section-title">照片</span>
           </template>
-          
+
           <!-- 全身照 -->
           <div class="photo-group" v-if="member.full_body_url">
             <div class="sub-title">全身照</div>
             <div class="photo-list">
-              <img 
-                v-for="(url, idx) in splitUrls(member.full_body_url)" 
-                :key="'full-'+idx" 
-                :src="getFullUrl(url)" 
-                class="photo-item-large" 
+              <img
+                v-for="(url, idx) in splitUrls(member.full_body_url)"
+                :key="'full-'+idx"
+                :src="getFullUrl(url)"
+                class="photo-item-large"
                 @click="previewImage(getFullUrl(url))"
               />
             </div>
@@ -125,11 +125,11 @@
           <div class="photo-group" v-if="member.history_uniform_url">
             <div class="sub-title">历史队服照</div>
             <div class="photo-list">
-              <img 
-                v-for="(url, idx) in splitUrls(member.history_uniform_url)" 
-                :key="'uniform-'+idx" 
-                :src="getFullUrl(url)" 
-                class="photo-item" 
+              <img
+                v-for="(url, idx) in splitUrls(member.history_uniform_url)"
+                :key="'uniform-'+idx"
+                :src="getFullUrl(url)"
+                class="photo-item"
                 @click="previewImage(getFullUrl(url))"
               />
             </div>
@@ -139,11 +139,11 @@
           <div class="photo-group" v-if="member.history_formula_url">
             <div class="sub-title">历史公式照</div>
             <div class="photo-list">
-              <img 
-                v-for="(url, idx) in splitUrls(member.history_formula_url)" 
-                :key="'formula-'+idx" 
-                :src="getFullUrl(url)" 
-                class="photo-item" 
+              <img
+                v-for="(url, idx) in splitUrls(member.history_formula_url)"
+                :key="'formula-'+idx"
+                :src="getFullUrl(url)"
+                class="photo-item"
                 @click="previewImage(getFullUrl(url))"
               />
             </div>
@@ -172,91 +172,94 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue'
 
-const MEMBER_NAME = '吴睿莎';
+const MEMBER_NAME = '吴睿莎'
 
-const member = ref(null);
-const electionRanks = ref([]);
-const loading = ref(true);
-const error = ref('');
+const member = ref(null)
+const electionRanks = ref([])
+const loading = ref(true)
+const error = ref('')
 
 const hasPhotos = computed(() => {
-  if (!member.value) return false;
-  return member.value.full_body_url || member.value.history_uniform_url || member.value.history_formula_url;
-});
+  if (!member.value) return false
+  return member.value.full_body_url || member.value.history_uniform_url || member.value.history_formula_url
+})
 
 const getFullUrl = (url) => {
-  if (!url) return '';
+  if (!url) return ''
   if (url.startsWith('http://') || url.startsWith('https://')) {
-    return url;
+    return url
   }
-  return `https://abm48.com${url}`;
-};
+  return `https://abm48.com${url}`
+}
 
 const splitUrls = (str) => {
-  if (!str) return [];
-  return str.split(/[;,]/).filter((u) => u.trim());
-};
+  if (!str) return []
+  return str.split(/[;,]/).filter((u) => u.trim())
+}
 
-const fetchMemberDetail = async () => {
-  loading.value = true;
-  error.value = '';
-  
-  try {
-    const res = await fetch(`/profile.php?member_id=${encodeURIComponent(MEMBER_NAME)}&type=member`);
-    
-    if (!res.ok) {
-      throw new Error(`请求失败: ${res.status}`);
-    }
-    
-    const data = await res.json();
-    if (data && !data.error) {
-      member.value = data;
-    } else {
-      error.value = data?.error || '获取成员详情失败';
-    }
-  } catch (err) {
-    console.error('获取成员详情失败:', err);
-    error.value = '无法加载成员资料';
-  } finally {
-    loading.value = false;
+async function getMemberId() {
+  const res = await fetch('/api/public/snh48/mapping')
+  if (!res.ok) throw new Error(`mapping 请求失败: ${res.status}`)
+  const mapping = await res.json()
+  const id = mapping[MEMBER_NAME]
+  if (!id) throw new Error(`未找到成员 "${MEMBER_NAME}"`)
+  return id
+}
+
+const fetchMemberDetail = async (memberId) => {
+  const res = await fetch(`/api/public/snh48/members/${memberId}`)
+  if (!res.ok) throw new Error(`请求失败: ${res.status}`)
+  const data = await res.json()
+  if (data && !data.error) {
+    member.value = data
+  } else {
+    error.value = data?.error || '获取成员详情失败'
   }
-};
+}
 
-const fetchElectionRanks = async () => {
+const fetchElectionRanks = async (memberId) => {
   try {
-    const res = await fetch(`/profile.php?member_id=${encodeURIComponent(MEMBER_NAME)}&type=election-ranks`);
-
+    const res = await fetch(`/api/public/snh48/members/${memberId}/election-ranks`)
     if (res.ok) {
-      const data = await res.json();
+      const data = await res.json()
       if (Array.isArray(data)) {
         electionRanks.value = [...data].sort((a, b) => {
-          const y = Number(a.election_year) - Number(b.election_year);
-          if (y !== 0) return y;
-          return Number(a.election_no) - Number(b.election_no);
-        });
+          const y = Number(a.election_year) - Number(b.election_year)
+          if (y !== 0) return y
+          return Number(a.election_no) - Number(b.election_no)
+        })
       }
     }
   } catch (err) {
-    console.error('获取总选排名失败:', err);
-    electionRanks.value = [];
+    console.error('获取总选排名失败:', err)
+    electionRanks.value = []
   }
-};
+}
 
 const previewImage = (url) => {
-  window.open(url, '_blank');
-};
+  window.open(url, '_blank')
+}
 
 const openLink = (url) => {
-  window.open(url, '_blank');
-};
+  window.open(url, '_blank')
+}
 
-onMounted(() => {
-  document.title = '吴睿莎 ✽ 简介';
-  fetchMemberDetail();
-  fetchElectionRanks();
-});
+onMounted(async () => {
+  document.title = '吴睿莎 ✽ 简介'
+  loading.value = true
+  error.value = ''
+  try {
+    const id = await getMemberId()
+    await Promise.all([fetchMemberDetail(id), fetchElectionRanks(id)])
+  } catch (err) {
+    console.error('获取成员资料失败:', err)
+    error.value = '无法加载成员资料'
+  } finally {
+    loading.value = false
+  }
+})
 </script>
 
 <style scoped>
@@ -507,35 +510,35 @@ onMounted(() => {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .avatar-large {
     width: 80px;
     height: 80px;
   }
-  
+
   .name-large {
     font-size: 22px;
   }
-  
+
   .d-item {
     width: 100%;
   }
-  
+
   .photo-item {
     width: 110px;
     height: 160px;
   }
-  
+
   .photo-item-large {
     width: 160px;
     height: 240px;
   }
-  
+
   .footer-actions {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .footer-actions .el-button {
     width: 80%;
     max-width: 250px;

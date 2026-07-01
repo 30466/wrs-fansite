@@ -1,4 +1,19 @@
-const TOOLS_HOST = '/tools-api'
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+async function withRetry(fn, label = '请求', retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fn()
+    } catch (e) {
+      const isLast = i === retries - 1
+      console.warn(`[${label}] 第${i + 1}次失败: ${e.message}${isLast ? '，已耗尽重试次数' : `，${retries - i - 1}秒后重试...`}`)
+      if (isLast) throw e
+      await sleep((i + 1) * 1000)
+    }
+  }
+}
 
 function deviceId() {
   return crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2, 18)
@@ -23,41 +38,51 @@ function pocketHeaders() {
 }
 
 export async function getMapping() {
-  const res = await fetch(`${TOOLS_HOST}/api/public/snh48/mapping`)
-  if (!res.ok) throw new Error(`获取成员映射失败 (HTTP ${res.status})`)
-  return res.json()
+  return withRetry(async () => {
+    const res = await fetch('/api/public/snh48/mapping')
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    return res.json()
+  }, '成员映射')
 }
 
 export async function getRoomMap() {
-  const res = await fetch(`${TOOLS_HOST}/api/public/snh48/room-map`)
-  if (!res.ok) throw new Error(`获取房间映射失败 (HTTP ${res.status})`)
-  return res.json()
+  return withRetry(async () => {
+    const res = await fetch('/api/public/snh48/room-map')
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    return res.json()
+  }, '房间映射')
 }
 
 export async function getLiveList(userId, next = '0') {
-  const res = await fetch(`${TOOLS_HOST}/pocketapi/getLiveList`, {
-    method: 'POST',
-    headers: pocketHeaders(),
-    body: JSON.stringify({ userId, next, debug: true, record: true })
-  })
-  if (!res.ok) throw new Error(`获取录播列表失败 (HTTP ${res.status})`)
-  return res.json()
+  return withRetry(async () => {
+    const res = await fetch('/pocketapi/getLiveList', {
+      method: 'POST',
+      headers: pocketHeaders(),
+      body: JSON.stringify({ userId, next, debug: true, record: true })
+    })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    return res.json()
+  }, '录播列表')
 }
 
 export async function getLiveOne(liveId) {
-  const res = await fetch(`${TOOLS_HOST}/pocketapi/getLiveOne`, {
-    method: 'POST',
-    headers: pocketHeaders(),
-    body: JSON.stringify({ liveId: String(liveId) })
-  })
-  if (!res.ok) throw new Error(`获取录播详情失败 (HTTP ${res.status})`)
-  return res.json()
+  return withRetry(async () => {
+    const res = await fetch('/pocketapi/getLiveOne', {
+      method: 'POST',
+      headers: pocketHeaders(),
+      body: JSON.stringify({ liveId: String(liveId) })
+    })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    return res.json()
+  }, '录播详情')
 }
 
 export async function fetchM3U8(url) {
-  const proxyUrl = `${TOOLS_HOST}/proxy/segment?url=${encodeURIComponent(url)}`
-  const res = await fetch(proxyUrl)
-  return res.text()
+  return withRetry(async () => {
+    const res = await fetch(url)
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    return res.text()
+  }, 'M3U8')
 }
 
 export function parseM3U8(text, baseUrl) {
@@ -100,31 +125,4 @@ export function timeToSeconds(t) {
 export function proxyCDN(url) {
   const idx = url.indexOf('/', url.indexOf('//') + 2)
   return '/cdn' + url.substring(idx)
-}
-
-export function proxySegment(url) {
-  return `${TOOLS_HOST}/proxy/segment?url=${encodeURIComponent(url)}`
-}
-
-export async function fetchSegment(url, signal) {
-  const sources = [
-    { url: `${TOOLS_HOST}/proxy/segment?url=${encodeURIComponent(url)}`, label: '后端' },
-    { url, label: '直连' }
-  ]
-
-  const doFetch = async ({ url: fetchUrl, label }) => {
-    const resp = await fetch(fetchUrl, { signal })
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
-    const data = await resp.arrayBuffer()
-    return { label, data }
-  }
-
-  try {
-    return await Promise.any(sources.map(s => doFetch(s)))
-  } catch (e) {
-    const msgs = e instanceof AggregateError
-      ? e.errors.map(err => err.message).join('; ')
-      : e.message
-    throw new Error(msgs)
-  }
 }

@@ -63,3 +63,6 @@ scripts/txt_source/*.txt
 database.db
 database.db-shm
 database.db-wal
+
+# MCP
+/.playwright-mcp

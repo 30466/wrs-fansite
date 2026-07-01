@@ -15,6 +15,11 @@ const router = createRouter({
       component: () => import('../views/Profile.vue')
     },
     {
+      path: '/replay',
+      name: 'replay',
+      component: () => import('../views/Replay.vue')
+    },
+    {
       path: '/about',
       name: 'about',
       component: () => import('../views/About.vue')
