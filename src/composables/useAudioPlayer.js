@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref, reactive, computed } from 'vue'
 
 const audio = new Audio()
 
@@ -7,7 +7,7 @@ const currentIndex = ref(-1)
 const isPlaying = ref(false)
 const currentTime = ref(0)
 const duration = ref(0)
-const playMode = ref('loop')
+const playMode = ref('loop') // 'loop' | 'single' | 'random'
 const isSeeking = ref(false)
 const showPlayer = computed(() => playlist.value.length > 0)
 
@@ -55,7 +55,15 @@ audio.addEventListener('timeupdate', () => {
 })
 
 audio.addEventListener('loadedmetadata', () => {
-  duration.value = audio.duration
+  if (isFinite(audio.duration)) {
+    duration.value = audio.duration
+  }
+})
+
+audio.addEventListener('durationchange', () => {
+  if (isFinite(audio.duration)) {
+    duration.value = audio.duration
+  }
 })
 
 audio.addEventListener('play', () => {

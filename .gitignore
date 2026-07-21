@@ -56,6 +56,12 @@ junit.xml
 public/data.json
 data.json
 
+# Generated data (from your script)
+public/data.json
+data.json
+public/data/
+scripts/merge-bilibili.js
+
 # User-uploaded clip data
 scripts/txt_source/*.txt
 
