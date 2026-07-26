@@ -55,10 +55,6 @@ junit.xml
 # Generated data (from your script)
 public/data.json
 data.json
-
-# Generated data (from your script)
-public/data.json
-data.json
 public/data/
 scripts/merge-bilibili.js
 
@@ -70,5 +66,5 @@ database.db
 database.db-shm
 database.db-wal
 
-# MCP
+# Playwright MCP
 /.playwright-mcp
