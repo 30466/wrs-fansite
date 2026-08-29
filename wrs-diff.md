@@ -13,6 +13,7 @@
 | `src/assets/bg.jpg` | wrs 自己的背景图 |
 | `public/icon-192.png` | 由 `scripts/generate-icons.py` 从 bg.jpg 生成 |
 | `public/icon-512.png` | 同上 |
+| `screenshots/` | wrs 页面截图，更新时应从 wrs 本地页面重新截取，不要从 tsh 复制覆盖 |
 | `public/data/songs.json` | 由 `node scripts/gen-data.js` 从 `scripts/txt_source/` 生成 |
 | `public/data/videoclips.json` | 视频切片数据，wrs 专属 |
 | `public/data/bilibili-merged.json` | 由 `node scripts/merge-bilibili.js` 生成 |
