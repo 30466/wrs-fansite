@@ -19,6 +19,7 @@
 | `public/data/bilibili-merged.json` | 由 `node scripts/merge-bilibili.js` 生成 |
 | `scripts/txt_source/` | 唱歌切片源数据 |
 | `scripts/merge-bilibili.js` | 读取 `wrs-up-list.txt`，过滤 `吴睿莎` |
+| `scripts/merge-weibo.js` | 读取 `weibo-core/wrs.txt`，使用 WRS 专属账号和筛选规则 |
 
 ---
 
