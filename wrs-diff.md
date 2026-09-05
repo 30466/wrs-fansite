@@ -29,8 +29,8 @@
 # 所有源文件：谭思慧 → 吴睿莎
 sed -i 's/谭思慧/吴睿莎/g' src/App.vue src/views/*.vue src/components/*.vue src/composables/*.js src/utils/*.js src/api/*.js src/router/index.js src/main.js index.html vite.config.js
 
-# 去掉 CGT48 前缀
-sed -i 's/CGT48 //g' src/App.vue src/views/About.vue index.html vite.config.js
+# 去掉 SNH48 前缀
+sed -i 's/SNH48 //g' src/App.vue src/views/About.vue index.html vite.config.js
 ```
 
 ## 2. 从 TSH 同步时必须保留的公共逻辑
