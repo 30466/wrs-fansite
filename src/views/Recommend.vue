@@ -1,21 +1,24 @@
 <template>
   <section class="recommend-view">
     <header class="recommend-header">
-      <el-radio-group v-model="platform" size="large" aria-label="选择安利平台">
+      <el-radio-group v-model="platform" size="large" class="platform-switch" aria-label="选择安利平台">
         <el-radio-button label="bilibili"><i class="fab fa-bilibili platform-icon bilibili-icon"></i>B站</el-radio-button>
         <el-radio-button label="weibo"><i class="fab fa-weibo platform-icon weibo-icon"></i>微博</el-radio-button>
         <el-radio-button label="douyin"><i class="fab fa-tiktok platform-icon douyin-icon"></i>抖音</el-radio-button>
+        <el-radio-button label="rednote"><XiaohongshuIcon class="platform-icon rednote-icon" />小红书</el-radio-button>
       </el-radio-group>
       <nav class="source-links" aria-label="安利数据来源">
         <a href="https://github.com/30466/bili-core" target="_blank" rel="noopener noreferrer">B站数据项目 bili-core</a>
         <a href="https://github.com/30466/weibo-core" target="_blank" rel="noopener noreferrer">微博数据项目 weibo-core</a>
         <a href="https://github.com/30466/douyin-downloader" target="_blank" rel="noopener noreferrer">抖音数据项目 douyin-downloader</a>
+        <a href="https://github.com/30466/rednote-core" target="_blank" rel="noopener noreferrer">小红书数据项目 rednote-core</a>
       </nav>
       <p v-if="currentUpdateTime" class="update-time">数据更新：{{ currentUpdateTime }}（北京时间）</p>
     </header>
     <Bilibili v-if="platform === 'bilibili'" />
     <Weibo v-else-if="platform === 'weibo'" />
-    <Douyin v-else />
+    <Douyin v-else-if="platform === 'douyin'" />
+    <Rednote v-else />
   </section>
 </template>
 
@@ -24,12 +27,14 @@ import { computed, onMounted, ref, watch } from 'vue'
 import Bilibili from './Bilibili.vue'
 import Weibo from './Weibo.vue'
 import Douyin from './Douyin.vue'
+import Rednote from './Rednote.vue'
+import XiaohongshuIcon from '../components/XiaohongshuIcon.vue'
 
 const platform = ref('bilibili')
 const updateTimes = ref({})
 const currentUpdateTime = computed(() => updateTimes.value[platform.value] || '')
 onMounted(async () => {
-  const files = { bilibili: 'bilibili-merged.json', weibo: 'weibo-merged.json', douyin: 'douyin-merged.json' }
+  const files = { bilibili: 'bilibili-merged.json', weibo: 'weibo-merged.json', douyin: 'douyin-merged.json', rednote: 'rednote-merged.json' }
   const entries = await Promise.all(Object.entries(files).map(async ([key, file]) => {
     try {
       const response = await fetch(`/data/${file}`)
@@ -45,7 +50,7 @@ function formatUpdateTime(value) {
   return new Intl.DateTimeFormat('zh-CN', { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(new Date(value))
 }
 watch(platform, value => {
-  const labels = { bilibili: 'B站', weibo: '微博', douyin: '抖音' }
+  const labels = { bilibili: 'B站', weibo: '微博', douyin: '抖音', rednote: '小红书' }
   document.title = `吴睿莎 ✽ ${labels[value]}安利`
 }, { immediate: true })
 </script>
@@ -62,4 +67,8 @@ watch(platform, value => {
 .bilibili-icon { color: #00a1d6; }
 .weibo-icon { color: #e6162d; }
 .douyin-icon { color: #161823; }
+.rednote-icon { color: #ff2442; }
+:deep(.platform-switch) { justify-content: center; flex-wrap: wrap; }
+:deep(.platform-switch .xiaohongshu-icon) { width: 1em; height: 1em; }
+@media(max-width:480px){:deep(.platform-switch .el-radio-button__inner){padding:12px 11px}}
 </style>

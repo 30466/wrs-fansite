@@ -8,7 +8,7 @@
       <el-divider />
       
       <h3>💗 关于安利</h3>
-      <p>安利页面收录了与吴睿莎相关的 B站视频、微博和抖音内容，可以在页面顶部切换平台，并按账号、关键词、发布时间和互动数据进行检索与排序。</p>
+      <p>安利页面收录了与吴睿莎相关的 B站视频、微博、抖音和小红书内容，可以在页面顶部切换平台，并按账号、关键词、发布时间和互动数据进行检索与排序。</p>
 
       <h4><i class="fab fa-bilibili platform-heading-icon bilibili-icon"></i>B站安利</h4>
       <p>B站部分选取固定的UP主（粉丝或产出账号），定期爬取他们的视频列表。除「莎莎子的神秘力量」外，其他账号仅展示标题或简介中含有「吴睿莎」的视频。</p>
@@ -28,7 +28,11 @@
       <p>抖音部分收录「阿莎阿莎💜」、「九月的小兔」和「BEJ48」的作品。前两个账号全量保留，BEJ48 账号仅保留标题、描述或标签中含有「吴睿莎」的作品。</p>
       <p>页面展示作品标题、描述、标签、媒体类型、时长、完整发布时间以及点赞、收藏、评论和分享数据，支持账号筛选、精确或模糊检索及升降序排列。</p>
 
-      <p>B站UP主、微博和抖音账号列表会不定时爬取更新。如果你知道有优质产出账号尚未收录，欢迎联系我补充。</p>
+      <h4><XiaohongshuIcon class="platform-heading-icon rednote-icon" />小红书安利</h4>
+      <p>小红书部分收录吴睿莎的小红书账号「Ailsasha977」发布的全部公开作品，不做关键词筛选。</p>
+      <p>页面展示作品标题、描述、标签、媒体类型、完整发布时间以及点赞、收藏、评论和分享数据，支持账号筛选、精确或模糊检索及升降序排列。</p>
+
+      <p>B站UP主、微博、抖音和小红书账号列表会不定时爬取更新。如果你知道有优质产出账号尚未收录，欢迎联系我补充。</p>
 
       <h3>🔗 项目源代码与数据来源</h3>
       <p class="project-links">
@@ -36,6 +40,7 @@
         <a href="https://github.com/30466/bili-core" target="_blank" rel="noopener noreferrer">B站爬虫项目 bili-core</a>
         <a href="https://github.com/30466/weibo-core" target="_blank" rel="noopener noreferrer">微博爬虫项目 weibo-core</a>
         <a href="https://github.com/30466/douyin-downloader" target="_blank" rel="noopener noreferrer">抖音爬虫项目 douyin-downloader</a>
+        <a href="https://github.com/30466/rednote-core" target="_blank" rel="noopener noreferrer">小红书爬虫项目 rednote-core</a>
       </p>
 
       <el-divider />
@@ -77,6 +82,7 @@ import { ref, computed, onMounted } from 'vue';
 
 import wechatImg from '../assets/wechat.png';
 import qqImg from '../assets/qq.png';
+import XiaohongshuIcon from '../components/XiaohongshuIcon.vue';
 
 onMounted(() => {
   document.title = '吴睿莎 ✽ 关于';
@@ -106,6 +112,7 @@ a { color: #409EFF; text-decoration: none; }
 .bilibili-icon { color: #00a1d6; }
 .weibo-icon { color: #e6162d; }
 .douyin-icon { color: #161823; }
+.rednote-icon { color: #ff2442; vertical-align: -0.15em; }
 
 :deep(.qr-dialog .el-dialog__header) {
   text-align: center;

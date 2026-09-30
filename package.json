@@ -13,7 +13,8 @@
     "gen": "node scripts/gen-data.js",
     "sync-bili": "node scripts/merge-bilibili.js",
     "sync-weibo": "node scripts/merge-weibo.js",
-    "sync-douyin": "node scripts/merge-douyin.js"
+    "sync-douyin": "node scripts/merge-douyin.js",
+    "sync-rednote": "node scripts/merge-rednote.js"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",

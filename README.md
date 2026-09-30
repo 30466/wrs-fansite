@@ -9,7 +9,7 @@
   </a>
 </p>
 
-这是为 **BEJ48 成员吴睿莎** 建立的个人应援存档站，集中整理直播唱歌切片、非唱歌类视频切片、口袋48录播、B站与微博安利内容以及成员资料。本项目以 [tsh-fansite](https://github.com/30466/tsh-fansite) 为基础，根据成员信息、数据源、筛选规则、样式和页面内容进行小范围适配。
+这是为 **BEJ48 成员吴睿莎** 建立的个人应援存档站，集中整理直播唱歌切片、非唱歌类视频切片、口袋48录播、B站、微博、抖音与小红书安利内容以及成员资料。本项目以 [tsh-fansite](https://github.com/30466/tsh-fansite) 为基础，根据成员信息、数据源、筛选规则、样式和页面内容进行小范围适配。
 
 网站同时支持 PWA，可通过兼容浏览器安装到手机主屏幕或电脑桌面。
 
@@ -63,7 +63,7 @@
 
 ### 安利 `/recommend`
 
-页面默认显示 B站，可在顶部切换至微博。两个平台保持独立页面和业务逻辑，方便以后继续增加其他平台。
+页面默认显示 B站，可在顶部切换至微博、抖音和小红书。四个平台保持独立页面和业务逻辑，顶部同时显示当前平台合并数据的更新时间。
 
 #### B站
 
@@ -79,6 +79,18 @@
 - 支持正文和用户搜索，以及发布时间、点赞、评论和转发排序。
 - 热门检索侧重返图、直拍、focus、搬运、抖音、小红书和口袋等微博常见内容。
 
+#### 抖音
+
+- 收录“阿莎阿莎💜”“九月的小兔”和“BEJ48”的作品；前两个账号全量保留，BEJ48 仅保留标题、描述或标签中含“吴睿莎”的作品。
+- 支持账号筛选、标题/描述/标签的精确或模糊检索，以及发布时间、点赞、收藏、评论和分享的升降序排列。
+- 卡片展示完整发布时间、作品正文、标签和互动数据，不依赖封面图片。
+
+#### 小红书
+
+- 按小红书号 `Ailsasha977` 收录吴睿莎账号发布的全部公开作品，不做关键词筛选，也不依赖额外的账号 TXT 映射。
+- 支持标题、描述、标签和账号的精确或模糊检索，以及发布时间、点赞、收藏、评论和分享的升降序排列。
+- 数据来自 `rednote-core` 导出的账号 JSON，卡片展示媒体类型、完整发布时间和互动数据。
+
 ### 成员简介 `/profile`
 
 - 通过 [abm48.com](https://abm48.com/) 的公开接口加载成员资料。
@@ -93,7 +105,7 @@
 
 ### 关于 `/about`
 
-- 说明网站用途、B站与微博安利数据的收录和筛选方式。
+- 说明网站用途，以及 B站、微博、抖音和小红书安利数据的收录与筛选方式。
 - 提供维护者联系方式、个人主页以及同类应援站定制说明。
 
 ## 全局能力
@@ -130,6 +142,8 @@ src/
 │   ├── Recommend.vue       # 安利平台切换
 │   ├── Bilibili.vue        # 独立B站安利业务
 │   ├── Weibo.vue           # 独立微博安利业务
+│   ├── Douyin.vue          # 独立抖音安利业务
+│   ├── Rednote.vue         # 独立小红书安利业务
 │   ├── Profile.vue         # 成员简介
 │   ├── Upload.vue          # 上传后台
 │   └── About.vue           # 关于本站
@@ -140,6 +154,8 @@ scripts/
 ├── gen-data.js             # 根据本地切片源数据生成前端 JSON
 ├── merge-bilibili.js       # 合并 bili-core 抓取的 B 站数据
 ├── merge-weibo.js          # 合并 weibo-core 抓取的微博数据
+├── merge-douyin.js         # 合并 douyin-downloader 抓取的抖音数据
+├── merge-rednote.js        # 按小红书号合并 rednote-core 导出的 JSON
 ├── generate-icons.py       # 根据背景图生成 PWA 图标
 └── txt_source/             # 唱歌切片源数据（本地维护）
 ```
@@ -154,13 +170,15 @@ scripts/
 | `videoclips.json` | 非唱歌类视频切片记录 |
 | `bilibili-merged.json` | 合并并筛选后的B站视频 |
 | `weibo-merged.json` | 合并并筛选后的微博 |
+| `douyin-merged.json` | 合并并按账号规则筛选后的抖音作品 |
+| `rednote-merged.json` | 按小红书号合并后的账号作品 |
 
-抓取原始数据和生成后的 JSON 不提交到 Git；`scripts/merge-bilibili.js` 和 `scripts/merge-weibo.js` 是本项目用于合并爬虫项目数据的脚本，已纳入 Git，分别从本地 core 项目读取抓取结果并生成前端 JSON。脚本中的 `bili-core`、`weibo-core` 路径是维护者本机路径，其他使用者需要按自己的目录结构修改。
+抓取原始数据和生成后的 JSON 不提交到 Git；`scripts/merge-bilibili.js`、`scripts/merge-weibo.js`、`scripts/merge-douyin.js` 和 `scripts/merge-rednote.js` 已纳入 Git，分别从本地爬虫项目读取结果并生成前端 JSON。脚本中的 `bili-core`、`weibo-core`、`douyin-downloader` 和 `rednote-core` 路径是维护者本机路径，其他使用者需要按自己的目录结构修改。
 
 ### 时间契约
 
-- 微博 `createdAt` 是带时区的 UTC ISO 绝对时刻，B站 `created` 是 Unix 秒时间戳，口袋48 `ctime` 是 Unix 毫秒时间戳；合并脚本只按绝对时刻排序并原样保留，不转换成北京时间字符串。
-- 页面展示统一转换为 `Asia/Shanghai`。`generatedAt`、`createdAt` 等生成或创建时刻继续使用 UTC ISO，不参与日期归档。
+- 微博 `createdAt` 是带时区的 UTC ISO 绝对时刻，B站 `created` 和抖音 `create_time` 是 Unix 秒时间戳，口袋48 `ctime` 是 Unix 毫秒时间戳；小红书 `published_at` 是 `rednote-core` 导出的北京时间文本。
+- 页面把各平台的绝对时间统一转换为 `Asia/Shanghai`；小红书已经导出为北京时间文本，直接显示。`generatedAt`、`generated_at`、`createdAt` 等生成或创建时刻继续使用 UTC ISO，不参与日期归档。
 - `songs.json` 的 `date`、`videoclips.json` 的 `replayDate` 和录播日历分组都使用北京时间自然日，以北京时间 `00:00` 为日期边界。
 - 切片文件名中的日期时间被视为北京时间文字；`songs.json` 保持原有字段结构，由文件名前缀直接生成 `date` 和 `broadcastTime`。
 - 视频切片继续由上传表单直接写入 `videoclips.json`，保持原有 `broadcastTime`、`replayDate` 和 `liveId` 等字段，不要求额外的绝对时间字段。
@@ -169,8 +187,10 @@ scripts/
 
 - [bili-core](https://github.com/30466/bili-core)：负责 B 站视频列表、视频详情、分 P 和合集元数据的抓取与导出。
 - [weibo-core](https://github.com/30466/weibo-core)：负责微博账号帖子、正文详情和媒体元数据的抓取与导出。
+- [douyin-downloader](https://github.com/30466/douyin-downloader)：负责抖音账号作品、标签和互动数据的抓取与导出。
+- [rednote-core](https://github.com/30466/rednote-core)：负责小红书账号作品、正文、标签、发布时间和互动数据的抓取与导出。
 
-如果使用、修改、分发这两个项目的代码或上述抓取、导出功能，需要分别遵循它们的 **GNU Affero General Public License v3.0 or later（AGPL-3.0-or-later）**，保留版权、许可证和来源说明，并按许可证要求提供相应源码。完整条款请分别查看两个项目仓库中的 `LICENSE` 文件。
+`bili-core` 与 `weibo-core` 使用 **AGPL-3.0-or-later**，`douyin-downloader` 使用 **MIT License**，`rednote-core` 使用 **GPL-3.0**。使用、修改或分发时应分别遵循对应仓库的 `LICENSE`，保留必要的版权、许可证和来源说明，并在适用时提供相应源码。
 
 其他动态数据来自：
 
@@ -198,6 +218,8 @@ npm run preview
 npm run gen
 npm run sync-bili
 npm run sync-weibo
+npm run sync-douyin
+npm run sync-rednote
 ```
 
 `public/data/` 已被 Git 忽略。重新生成的 `songs.json` 需要单独上传；视频切片仍沿用原有 JSON 结构，不需要迁移。
@@ -209,7 +231,7 @@ npm test
 npm run audit:dates
 ```
 
-> `sync-bili` 和 `sync-weibo` 使用仓库中的合并脚本，并依赖本地 `bili-core`、`weibo-core` 的抓取数据目录；首次使用前请按上文说明修改脚本中的本机路径。生成的 `public/data/` 仍属于本地运行数据，不提交到 Git。
+> 四个 `sync-*` 命令使用仓库中的合并脚本，并依赖本地 `bili-core`、`weibo-core`、`douyin-downloader` 和 `rednote-core` 数据目录；首次使用前请按上文说明修改脚本中的本机路径。生成的 `public/data/` 仍属于本地运行数据，不提交到 Git。
 
 开发服务器代理：
 
@@ -234,7 +256,7 @@ npm run audit:dates
   → 浏览器下载结果
 ```
 
-如果录播源文件损坏，口袋48 CDN 可能返回 `HTTP 478`；这种情况不是用户网络或本站前端导致的。
+如果录播源文件损坏或被物理删除，口袋48 CDN 可能返回 `HTTP 478`；播放器连续检测到 5 次后会停止继续请求并提示用户，这种情况不是用户网络或本站前端导致的。
 
 ## 核心实现逻辑
 
@@ -275,6 +297,8 @@ npm run audit:dates
 - [本项目源代码](https://github.com/30466/wrs-fansite)
 - [Bilibili 抓取与导出工具 bili-core](https://github.com/30466/bili-core)
 - [微博抓取与导出工具 weibo-core](https://github.com/30466/weibo-core)
+- [抖音抓取与导出工具 douyin-downloader](https://github.com/30466/douyin-downloader)
+- [小红书抓取与导出工具 rednote-core](https://github.com/30466/rednote-core)
 - [吴睿莎应援存档站](https://wrs.abm48.com/)
 - [小偶像音乐网站](https://abm48.com/)
 - [个人工具站](https://tools.abm48.com/)
