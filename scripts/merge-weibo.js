@@ -1,3 +1,4 @@
+import { latestJsonFiles } from './latest-snapshot.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -84,7 +85,7 @@ for (const listedName of accountNames) {
     continue;
   }
 
-  const files = fs.readdirSync(accountDir).filter((file) => file.endsWith('.json')).sort();
+  const files = latestJsonFiles(accountDir);
   if (files.length === 0) {
     console.warn(`⚠️  ${listedName}: 无 JSON 文件，跳过`);
     continue;

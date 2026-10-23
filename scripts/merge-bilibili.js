@@ -1,3 +1,4 @@
+import { latestJsonFiles } from './latest-snapshot.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -62,7 +63,7 @@ function registerCollections(data) {
 
 for (const upDir of upDirs) {
   const dirPath = upDir.path;
-  const files = fs.readdirSync(dirPath).filter(f => f.endsWith('.json'));
+  const files = latestJsonFiles(dirPath);
 
   if (files.length === 0) {
     console.warn(`⚠️  ${upDir.name}: 无JSON文件，跳过`);

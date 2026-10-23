@@ -1,3 +1,4 @@
+import { latestJsonFiles } from './latest-snapshot.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -32,7 +33,7 @@ for (const listedName of ACCOUNT_NAMES) {
     continue;
   }
 
-  const files = fs.readdirSync(accountDir).filter(file => file.endsWith('.json')).sort();
+  const files = latestJsonFiles(accountDir);
   for (const file of files) {
     let data;
     try {

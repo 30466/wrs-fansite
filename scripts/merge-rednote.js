@@ -1,3 +1,4 @@
+import { latestJsonFiles, compareSnapshots } from './latest-snapshot.js'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -10,10 +11,10 @@ const ACCOUNT_NAME = '吴睿莎'
 
 function listJsonFiles(directory) {
   if (!fs.existsSync(directory)) return []
-  return fs.readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
-    const target = path.join(directory, entry.name)
-    return entry.isDirectory() ? listJsonFiles(target) : entry.isFile() && entry.name.endsWith('.json') ? [target] : []
-  })
+  const nested = fs.readdirSync(directory, { withFileTypes: true })
+    .filter(entry => entry.isDirectory())
+    .flatMap(entry => listJsonFiles(path.join(directory, entry.name)))
+  return [...latestJsonFiles(directory).map(file => path.join(directory, file)), ...nested]
 }
 
 const candidates = listJsonFiles(DATA_SRC).flatMap(file => {
@@ -26,7 +27,7 @@ const candidates = listJsonFiles(DATA_SRC).flatMap(file => {
     console.warn(`⚠️  ${file}: 读取失败，跳过 (${error.message})`)
     return []
   }
-}).sort((a, b) => Date.parse(b.data.exported_at ?? 0) - Date.parse(a.data.exported_at ?? 0))
+}).sort((a, b) => compareSnapshots(a.file, b.file, a.data, b.data))
 
 const latest = candidates[0]?.data
 if (!latest) console.warn(`⚠️  未找到小红书号 ${ACCOUNT_ID} 的导出 JSON，将生成空数据文件`)
